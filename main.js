@@ -42,21 +42,24 @@ $(".btn").on("click", function (event) {
         animateColorBlock(userClickedColor);
 
         // Validate if user clicked colors in correct sequence
-        let answer = checkAnswer(userClickedColors, gameGeneratedColors);
+        let answerBool = checkAnswer(userClickedColors, gameGeneratedColors);
+        let equalSizeBool = userClickedColors.length == gameGeneratedColors.length;
 
-        if (answer && userClickedColors.length == gameGeneratedColors.length) {
+        if (answerBool && equalSizeBool) {
             setTimeout(function () {
-                randomColor = availableColors[randomNum()];
-                gameGeneratedColors.push(randomColor);
+                addRandomColorToList();
                 setTimeout(function () {
                     animateColorBlock(randomColor);
                 }, 1500);
             }, 500);
-            // Reset user clicked colors list;
-            userClickedColors = [];
+
+            // Reset user clicked colors list
+            userClickedColors.length = 0;
+
+            //Update Level
             changeLevelTitle();
             level = gameGeneratedColors.length;
-        } else if (!answer && userClickedColors.length == gameGeneratedColors.length) {
+        } else if (!answerBool && equalSizeBool) {
             gameOver();
             level = 0;
         }
@@ -66,15 +69,19 @@ $(".btn").on("click", function (event) {
 
 
 // ----- Functions -----
+function randomNum() {  // Between 0-3;
+    return Math.floor(Math.random() * 4);
+
+};
+
+function addRandomColorToList() {
+    randomColor = availableColors[randomNum()];
+    gameGeneratedColors.push(randomColor);
+}
 
 function playSound(color) {
     let audio = new Audio(`sounds/${color}.mp3`);
     audio.play();
-};
-
-function flashTitle() {
-    $("h1").fadeOut(80).fadeIn(80);
-
 };
 
 function animateColorBlock(userClickedColor) {
@@ -82,6 +89,11 @@ function animateColorBlock(userClickedColor) {
     setTimeout(function () {
         $(`#${userClickedColor}`).removeClass("pressed");
     }, 200);
+
+};
+
+function flashTitle() {
+    $("h1").fadeOut(80).fadeIn(80);
 
 };
 
@@ -106,8 +118,9 @@ function changeLevelTitle() {
     }, 1000);
 };
 
+
 function gameOver() {
-    $("h1").text("GAME OVER :( \n Press any key to restart");
+    $("h1").multiline("GAME OVER :( \n Press any key to restart");
     gameGeneratedColors.length = 0;
     userClickedColors.length = 0;
     isOn = false;
@@ -117,7 +130,9 @@ function gameOver() {
     }, 500);
 };
 
-function randomNum() {  // Between 0-3;
-    return Math.floor(Math.random() * 4);
 
-};
+$.fn.multiline = function (text) {
+    this.text(text);
+    this.html(this.html().replace(/\n/g, '<br/>'));
+    return this;
+}
