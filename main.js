@@ -128,6 +128,7 @@ function gameOver() {
     setTimeout(function () {
         $("body").removeClass("game-over");
     }, 500);
+    new Audio("sounds/wrong.mp3").play();
 };
 
 
